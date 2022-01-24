@@ -1,0 +1,96 @@
+<?php
+session_start();
+if($_SESSION["userID"]==false)
+{
+    header('location:adminLogin.php');
+}
+ ?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <title>Admin View Products</title>
+
+</head>
+<body>
+<?php
+$servername = "localhost";
+$username = "root";
+$password = "root";
+$dbname = "assignment2";
+
+// Create connection
+$conn = new mysqli($servername, $username, $password, $dbname);
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+?>
+<div class="container mt-5">
+    <div class="row">
+        <div class="col">
+            <div class="row">
+                <div class="col-12">
+                    <button type='button' class='btn btn-danger'style='float: right'><a href='logout.php' style='text-decoration: none; color: white'>Logout!</a></button>
+                </div>
+            </div>
+            <div class="row">
+                <?php
+
+                $sql = "SELECT product.ProductId,product.Name,type.TypeName,product.Price, product.Description, product.PicURL FROM product inner join type on product.TypeId=type.TypeId where IsActive=1";
+                $result = $conn->query($sql);
+
+                if ($result->num_rows > 0) {
+                    while ($row = $result->fetch_assoc()) {
+                        echo "
+            <div class='col-3 m-2'>
+            <div class='card' style='width: 18rem';>
+                <img src='img/".$row['PicURL']."' class='card-img-top' alt='productImage' height='150px' width='100px'>
+                <div class='card-body'>
+                  <h4 class='card-title'>Name:". $row["Name"]."</h4>
+                  <h5 class='card-text'>Type:". $row["TypeName"]." </h5>
+                  <h5 class='card-text'>Price:".$row["Price"]."</h5>
+                  <p class='card-text'>Description:".$row["Description"]."</p>
+                  <hr>
+                  <form method='post'action='editProduct.php'>
+                    <input type='hidden' name='editProductid' value='".  $row["ProductId"] ."'/>
+                    <button type='submit' class='btn btn-success' name='edit' id='edit' style='float: left'>Edit</button>
+                  </form>
+                  <form method='post' action='deleteItem.php'>
+                    <input type='hidden' name='productid' value='".  $row["ProductId"] ."'/>
+                    <button type='submit' class='btn btn-danger' name='delete' id='delete' style='float: right'>Delete</button>
+                  </form>
+                </div>
+              </div>
+        </div>
+        ";
+
+                    }
+                }
+
+
+                $conn->close();
+                ?>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</body>
+</html>
+
